@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:surf_test/constants/colors/colors_styles.dart';
 import 'package:surf_test/constants/text/text_styles.dart';
+import 'package:surf_test/modules/main_page/presentation/widget/movie_card.dart';
 
 class MainView extends StatefulWidget {
   MainView({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class _MainViewState extends State<MainView> {
         backgroundColor: ColorStyles.app_black_222325,
         title: Container(
           width: double.infinity,
-          height: 40.h,
+          height: 50.h,
           child: TextField(
             controller: searchController,
             onChanged: (String val) {
@@ -51,8 +52,7 @@ class _MainViewState extends State<MainView> {
                     )
                   : null,
               filled: true,
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+              contentPadding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
               fillColor: Colors.white,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
@@ -69,8 +69,53 @@ class _MainViewState extends State<MainView> {
         ),
       ),
       body: SafeArea(
-        child: Container(
-          child: Text('hello world'),
+        child: RefreshIndicator(
+          onRefresh: () async {
+            print('Hello');
+          },
+          child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
+              child: ListView(
+                padding: EdgeInsets.only(bottom: 10),
+                children: [
+                  MovieCardWidget(
+                    nameOfMovie: 'Аритмия 18+',
+                    movieDescription: 'У сотрудника крупного банка всё идёт по накатанной, пока однажды он не выясняет',
+                    movieImgUrl: '',
+                    movieReleaseDate: '1 января 2017',
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  MovieCardWidget(
+                    nameOfMovie: 'Аритмия 1asdadasasdasdads8+',
+                    movieDescription: 'У сотрудника крупного банка всё идёт по накатанной, пока однажды он не выясняет',
+                    movieImgUrl: '',
+                    movieReleaseDate: '1 января 2017',
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  MovieCardWidget(
+                    nameOfMovie: 'Аритмия 18+',
+                    movieDescription: 'У сотрудника крупного банка всё идёт по накатанной, пока однажды он не выясняет',
+                    movieImgUrl: '',
+                    movieReleaseDate: '1 января 2017',
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  MovieCardWidget(
+                    nameOfMovie: 'Аритмия 18+',
+                    movieDescription: 'У сотрудника крупного банка всё идёт по накатанной, пока однажды он не выясняет',
+                    movieImgUrl: '',
+                    movieReleaseDate: '1 января 2017',
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                ],
+              )),
         ),
       ),
     );
