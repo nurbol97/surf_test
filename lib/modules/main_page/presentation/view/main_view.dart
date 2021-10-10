@@ -81,7 +81,7 @@ class _MainViewState extends State<MainView> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
-            print('Hello');
+            context.read<MovieBloc>().add(LoadMovies());
           },
           child: BlocConsumer<MovieBloc, MovieState>(
             listener: (context, state) {
@@ -101,7 +101,6 @@ class _MainViewState extends State<MainView> {
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: ListView.builder(
-                      padding: EdgeInsets.only(bottom: 20.h),
                       shrinkWrap: true,
                       itemCount: moviesList.length,
                       itemBuilder: (context, index) {

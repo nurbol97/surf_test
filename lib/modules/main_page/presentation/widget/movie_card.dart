@@ -18,6 +18,7 @@ class MovieCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.only(bottom: 10.h),
       width: double.infinity,
       height: 220.h,
       child: Row(
@@ -58,7 +59,8 @@ class MovieCardWidget extends StatelessWidget {
                         movieDescription,
                         style: TextStyles.grey_12_w500,
                         textAlign: TextAlign.left,
-                        maxLines: 10,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
