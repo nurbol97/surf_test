@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -18,10 +20,17 @@ class _MainViewState extends State<MainView> {
   TextEditingController searchController = new TextEditingController();
   int symbolCount = 0;
   List<MoviesEntity> moviesList = [];
+  ScrollController scrollController = ScrollController();
+  bool isLoading = false;
   @override
   void initState() {
     context.read<MovieBloc>().add(LoadMovies());
     super.initState();
+  }
+
+  void scrollToBottom() {
+    scrollController.animateTo(scrollController.position.maxScrollExtent,
+        duration: Duration(milliseconds: 100), curve: Curves.linear);
   }
 
   @override
@@ -81,11 +90,20 @@ class _MainViewState extends State<MainView> {
       body: SafeArea(
         child: RefreshIndicator(
           onRefresh: () async {
-            context.read<MovieBloc>().add(LoadMovies());
+            context.read<MovieBloc>().add(UpdateMovies());
           },
           child: BlocConsumer<MovieBloc, MovieState>(
             listener: (context, state) {
-              // TODO: implement listener
+              if (state is MovieFailure) {
+                Scaffold.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+                context.read<MovieBloc>().isFetching = false;
+              }
+              if (state is MovieLoadSuccess) {
+                scrollToBottom();
+                setState(() {
+                  isLoading = false;
+                });
+              }
             },
             builder: (context, state) {
               if (state is MovieLoading) {
@@ -94,22 +112,64 @@ class _MainViewState extends State<MainView> {
                 );
               } else if (state is MovieFailure) {
                 return Center(
-                  child: Text(state.message),
+                  child: CircularProgressIndicator(),
                 );
               } else if (state is MovieLoadSuccess) {
-                moviesList = state.movies;
+                moviesList.addAll(state.movies);
+                context.read<MovieBloc>().isFetching = false;
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: ListView.builder(
+                      controller: scrollController,
                       shrinkWrap: true,
-                      itemCount: moviesList.length,
+                      itemCount: moviesList.length + 1,
                       itemBuilder: (context, index) {
-                        return MovieCardWidget(
-                          nameOfMovie: moviesList[index].name,
-                          movieDescription: moviesList[index].description,
-                          movieImgUrl: moviesList[index].imgUrl,
-                          movieReleaseDate: moviesList[index].date,
-                        );
+                        if (index == moviesList.length) {
+                          return !isLoading
+                              ? Center(
+                                  child: Ink(
+                                    decoration: const ShapeDecoration(
+                                      color: Colors.blue,
+                                      shape: CircleBorder(),
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(Icons.refresh),
+                                      color: Colors.white,
+                                      onPressed: () {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        context.read<MovieBloc>().isFetching = true;
+                                        context.read<MovieBloc>().add(LoadMovies());
+                                      },
+                                    ),
+                                  ),
+                                )
+                              : Container(
+                                  margin: EdgeInsets.symmetric(vertical: 10),
+                                  width: 10,
+                                  height: 30,
+                                  child: Align(
+                                      alignment: Alignment.bottomCenter,
+                                      child: CircularProgressIndicator(strokeWidth: 3.0)),
+                                );
+                        } else {
+                          return InkWell(
+                            onTap: () {
+                              final snackBar = SnackBar(
+                                content: Text('${moviesList[index].name}'),
+                                duration: const Duration(milliseconds: 500),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            },
+                            child: MovieCardWidget(
+                              nameOfMovie: moviesList[index].name,
+                              movieDescription: moviesList[index].description,
+                              movieImgUrl: moviesList[index].imgUrl,
+                              movieReleaseDate: moviesList[index].date,
+                            ),
+                          );
+                        }
                       }),
                   // child: ListView(
                   //   padding: EdgeInsets.only(bottom: 10),
