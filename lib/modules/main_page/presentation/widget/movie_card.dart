@@ -27,6 +27,7 @@ class MovieCardWidget extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
+                  // image: NetworkImage('https://api.themoviedb.org$movieImgUrl'),
                   image: NetworkImage('https://b1.filmpro.ru/c/548013.jpg'),
                   fit: BoxFit.cover,
                 ),
@@ -57,6 +58,7 @@ class MovieCardWidget extends StatelessWidget {
                         movieDescription,
                         style: TextStyles.grey_12_w500,
                         textAlign: TextAlign.left,
+                        maxLines: 10,
                       ),
                     ),
                   ),

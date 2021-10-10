@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
+import 'core/utils/injection_container.dart';
+import 'modules/main_page/presentation/bloc/movie_bloc.dart';
 import 'modules/main_page/presentation/view/main_view.dart';
 
 void main() {
+  setupInjections();
   runApp(MyApp());
 }
 
@@ -17,25 +20,19 @@ class MyApp extends StatelessWidget {
     // ]);
     return ScreenUtilInit(
       designSize: Size(375, 812),
-      // builder: () => MultiBlocProvider(
-      //   providers: [
-      //     // BlocProvider<UserRegistBloc>(
-      //     //   create: (_) => sl<UserRegistBloc>(),
-      //     // ),
-      //     // BlocProvider(create: (_) => sl<LoginBloc>()),
-      //     // BlocProvider(create: (_) => sl<AuthBloc>()),
-      //     // BlocProvider(create: (_) => sl<OrderAnswerExpressBloc>()),
-      //     // BlocProvider(create: (_) => sl<CatalogBloc>()),
-      //   ],
-      // child: MaterialApp(
-      builder: () => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: MainView(),
-        onUnknownRoute: (RouteSettings settings) {
-          return MaterialPageRoute(builder: (_) => MainView());
-        },
+      builder: () => MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (_) => sl<MovieBloc>()),
+        ],
+        child: MaterialApp(
+          // builder: () => MaterialApp(
+          debugShowCheckedModeBanner: false,
+          home: MainView(),
+          onUnknownRoute: (RouteSettings settings) {
+            return MaterialPageRoute(builder: (_) => MainView());
+          },
+        ),
       ),
-      // ),
     );
   }
 }
