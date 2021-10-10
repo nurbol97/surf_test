@@ -6,6 +6,7 @@ import 'package:surf_test/modules/main_page/data/datasources/movie_datasource.da
 import 'package:surf_test/modules/main_page/data/repository/news_repository_impl.dart';
 import 'package:surf_test/modules/main_page/domain/repositories/movies_repository.dart';
 import 'package:surf_test/modules/main_page/domain/usecases/get_movies_usecase.dart';
+import 'package:surf_test/modules/main_page/domain/usecases/search_movies_usecase.dart';
 import 'package:surf_test/modules/main_page/presentation/bloc/movie_bloc.dart';
 
 final sl = GetIt.instance;
@@ -31,8 +32,9 @@ void setupInjections() {
   );
 
   sl.registerLazySingleton(() => GetMovies(sl()));
+  sl.registerLazySingleton(() => SearchMovies(sl()));
 
   sl.registerFactory<MovieBloc>(
-    () => MovieBloc(sl()),
+    () => MovieBloc(sl(), sl()),
   );
 }

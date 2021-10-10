@@ -3,15 +3,18 @@ import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:surf_test/modules/main_page/domain/entity/movies_entity.dart';
 import 'package:surf_test/modules/main_page/domain/usecases/get_movies_usecase.dart';
+import 'package:surf_test/modules/main_page/domain/usecases/search_movies_usecase.dart';
 
 part 'movie_event.dart';
 part 'movie_state.dart';
 
 class MovieBloc extends Bloc<MovieEvent, MovieState> {
   final GetMovies getMovies;
+  final SearchMovies searchMovies;
   int page = 1;
+  int searchPage = 1;
   bool isFetching = false;
-  MovieBloc(this.getMovies) : super(MovieInitial());
+  MovieBloc(this.getMovies, this.searchMovies) : super(MovieInitial());
 
   @override
   Stream<MovieState> mapEventToState(MovieEvent event) async* {
@@ -39,6 +42,20 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
           (failure) => MovieFailure(failure.toString()),
           (movies) => MovieLoadSuccess(movies),
         );
+      } on DioError catch (e) {
+        print(e.response!.statusCode);
+        yield MovieFailure('Server Error!');
+      } catch (e) {
+        yield MovieFailure(e.toString());
+      }
+    }
+    if (event is SearchMovie) {
+      try {
+        final response = await searchMovies(SearchMoviesParams(page: searchPage, query: event.query));
+        yield response.fold((failure) => MovieFailure(failure.toString()), (movies) {
+          searchPage++;
+          return SearchSuccess(movies);
+        });
       } on DioError catch (e) {
         print(e.response!.statusCode);
         yield MovieFailure('Server Error!');

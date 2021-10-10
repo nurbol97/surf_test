@@ -21,16 +21,13 @@ class _MainViewState extends State<MainView> {
   int symbolCount = 0;
   List<MoviesEntity> moviesList = [];
   ScrollController scrollController = ScrollController();
+  List<MoviesEntity> searchList = [];
+  ScrollController scrollControllerForSearcg = ScrollController();
   bool isLoading = false;
   @override
   void initState() {
     context.read<MovieBloc>().add(LoadMovies());
     super.initState();
-  }
-
-  void scrollToBottom() {
-    scrollController.animateTo(scrollController.position.maxScrollExtent,
-        duration: Duration(milliseconds: 100), curve: Curves.linear);
   }
 
   @override
@@ -43,6 +40,7 @@ class _MainViewState extends State<MainView> {
           width: double.infinity,
           height: 50.h,
           child: TextField(
+            onSubmitted: (String val) {},
             controller: searchController,
             onChanged: (String val) {
               setState(() {
@@ -95,11 +93,11 @@ class _MainViewState extends State<MainView> {
           child: BlocConsumer<MovieBloc, MovieState>(
             listener: (context, state) {
               if (state is MovieFailure) {
-                Scaffold.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text('Проверьте соединение с интернетом и попробуйте еще раз! ${state.message}')));
                 context.read<MovieBloc>().isFetching = false;
               }
               if (state is MovieLoadSuccess) {
-                scrollToBottom();
                 setState(() {
                   isLoading = false;
                 });
@@ -112,7 +110,7 @@ class _MainViewState extends State<MainView> {
                 );
               } else if (state is MovieFailure) {
                 return Center(
-                  child: CircularProgressIndicator(),
+                  child: Text(state.message),
                 );
               } else if (state is MovieLoadSuccess) {
                 moviesList.addAll(state.movies);
@@ -121,6 +119,14 @@ class _MainViewState extends State<MainView> {
                   padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: ListView.builder(
                       controller: scrollController,
+                      // ..addListener(() {
+                      //   if (scrollController.position.atEdge) {
+                      //     if (scrollController.position.pixels != 0) {
+                      //       context.read<MovieBloc>().isFetching = true;
+                      //       context.read<MovieBloc>().add(LoadMovies());
+                      //     }
+                      //   }
+                      // }),
                       shrinkWrap: true,
                       itemCount: moviesList.length + 1,
                       itemBuilder: (context, index) {
@@ -141,17 +147,15 @@ class _MainViewState extends State<MainView> {
                                         });
                                         context.read<MovieBloc>().isFetching = true;
                                         context.read<MovieBloc>().add(LoadMovies());
+                                        Timer(Duration(milliseconds: 30), () {
+                                          scrollController.jumpTo(scrollController.position.maxScrollExtent);
+                                        });
                                       },
                                     ),
                                   ),
                                 )
-                              : Container(
-                                  margin: EdgeInsets.symmetric(vertical: 10),
-                                  width: 10,
-                                  height: 30,
-                                  child: Align(
-                                      alignment: Alignment.bottomCenter,
-                                      child: CircularProgressIndicator(strokeWidth: 3.0)),
+                              : Center(
+                                  child: CircularProgressIndicator(),
                                 );
                         } else {
                           return InkWell(
@@ -171,55 +175,74 @@ class _MainViewState extends State<MainView> {
                           );
                         }
                       }),
-                  // child: ListView(
-                  //   padding: EdgeInsets.only(bottom: 10),
-                  //   children: [
-                  //     MovieCardWidget(
-                  //       nameOfMovie: 'Аритмия 18+',
-                  //       movieDescription:
-                  //           'У сотрудника крупного банка всё идёт по накатанной, пока однажды он не выясняет',
-                  //       movieImgUrl: '',
-                  //       movieReleaseDate: '1 января 2017',
-                  //     ),
-                  //     SizedBox(
-                  //       height: 10,
-                  //     ),
-                  //     MovieCardWidget(
-                  //       nameOfMovie: 'Аритмия 1asdadasasdasdads8+',
-                  //       movieDescription:
-                  //           'У сотрудника крупного банка всё идёт по накатанной, пока однажды он не выясняет',
-                  //       movieImgUrl: '',
-                  //       movieReleaseDate: '1 января 2017',
-                  //     ),
-                  //     SizedBox(
-                  //       height: 10,
-                  //     ),
-                  //     MovieCardWidget(
-                  //       nameOfMovie: 'Аритмия 18+',
-                  //       movieDescription:
-                  //           'У сотрудника крупного банка всё идёт по накатанной, пока однажды он не выясняет',
-                  //       movieImgUrl: '',
-                  //       movieReleaseDate: '1 января 2017',
-                  //     ),
-                  //     SizedBox(
-                  //       height: 10,
-                  //     ),
-                  //     MovieCardWidget(
-                  //       nameOfMovie: 'Аритмия 18+',
-                  //       movieDescription:
-                  //           'У сотрудника крупного банка всё идёт по накатанной, пока однажды он не выясняет',
-                  //       movieImgUrl: '',
-                  //       movieReleaseDate: '1 января 2017',
-                  //     ),
-                  //     SizedBox(
-                  //       height: 10,
-                  //     ),
-                  //   ],
-                  // ),
+                );
+              } else if (state is SearchSuccess) {
+                searchList.addAll(state.movies);
+                context.read<MovieBloc>().isFetching = false;
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  child: ListView.builder(
+                      controller: scrollController,
+                      // ..addListener(() {
+                      //   if (scrollController.position.atEdge) {
+                      //     if (scrollController.position.pixels != 0) {
+                      //       context.read<MovieBloc>().isFetching = true;
+                      //       context.read<MovieBloc>().add(LoadMovies());
+                      //     }
+                      //   }
+                      // }),
+                      shrinkWrap: true,
+                      itemCount: searchList.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == searchList.length) {
+                          return !isLoading
+                              ? Center(
+                                  child: Ink(
+                                    decoration: const ShapeDecoration(
+                                      color: Colors.blue,
+                                      shape: CircleBorder(),
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(Icons.refresh),
+                                      color: Colors.white,
+                                      onPressed: () {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        context.read<MovieBloc>().isFetching = true;
+                                        context.read<MovieBloc>().add(LoadMovies());
+                                        Timer(Duration(milliseconds: 30), () {
+                                          scrollController.jumpTo(scrollController.position.maxScrollExtent);
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                )
+                              : Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                        } else {
+                          return InkWell(
+                            onTap: () {
+                              final snackBar = SnackBar(
+                                content: Text('${searchList[index].name}'),
+                                duration: const Duration(milliseconds: 500),
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            },
+                            child: MovieCardWidget(
+                              nameOfMovie: searchList[index].name,
+                              movieDescription: searchList[index].description,
+                              movieImgUrl: searchList[index].imgUrl,
+                              movieReleaseDate: searchList[index].date,
+                            ),
+                          );
+                        }
+                      }),
                 );
               } else {
                 return Center(
-                  child: Text('Some Error'),
+                  child: CircularProgressIndicator(),
                 );
               }
             },

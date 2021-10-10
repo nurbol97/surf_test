@@ -17,3 +17,9 @@ class MovieLoadSuccess extends MovieState {
 
   MovieLoadSuccess(this.movies);
 }
+
+class SearchSuccess extends MovieState {
+  final List<MoviesEntity> movies;
+
+  SearchSuccess(this.movies);
+}

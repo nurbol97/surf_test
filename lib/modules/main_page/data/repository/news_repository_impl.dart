@@ -5,6 +5,7 @@ import 'package:surf_test/modules/main_page/data/datasources/movie_datasource.da
 import 'package:surf_test/modules/main_page/domain/entity/movies_entity.dart';
 import 'package:surf_test/modules/main_page/domain/repositories/movies_repository.dart';
 import 'package:surf_test/modules/main_page/domain/usecases/get_movies_usecase.dart';
+import 'package:surf_test/modules/main_page/domain/usecases/search_movies_usecase.dart';
 
 class MoviesRepositoryImpl implements MoviesRepository {
   final MovieDataSource remoteDataSource;
@@ -19,6 +20,21 @@ class MoviesRepositoryImpl implements MoviesRepository {
         print('Repository IMPL MOVIES GET');
         final movies = await remoteDataSource.getMovies(params.page);
         return Right(movies);
+      } catch (e) {
+        return Left(ServerFailure(e.toString()));
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<MoviesEntity>>> searchMovies(SearchMoviesParams params) async {
+    if (await networkInfo.isConnected) {
+      try {
+        print('Repository IMPL MOVIES Search');
+        final moviesSearch = await remoteDataSource.getMovies(params.page);
+        return Right(moviesSearch);
       } catch (e) {
         return Left(ServerFailure(e.toString()));
       }
