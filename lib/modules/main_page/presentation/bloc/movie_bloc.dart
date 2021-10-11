@@ -52,6 +52,7 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
     if (event is SearchMovie) {
       try {
         final response = await searchMovies(SearchMoviesParams(page: searchPage, query: event.query));
+        print('Search Reponse $response');
         yield response.fold((failure) => MovieFailure(failure.toString()), (movies) {
           searchPage++;
           return SearchSuccess(movies);

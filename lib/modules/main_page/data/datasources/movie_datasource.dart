@@ -5,7 +5,7 @@ import 'package:surf_test/modules/main_page/domain/entity/movies_entity.dart';
 
 abstract class MovieDataSource {
   Future<List<MoviesEntity>> getMovies(int page);
-  Future<List<MoviesEntity>> sarchMovies(int page, String query);
+  Future<List<MoviesEntity>> searchMovies(int page, String query);
 }
 
 class MoviewDataSourceImpl implements MovieDataSource {
@@ -42,7 +42,7 @@ class MoviewDataSourceImpl implements MovieDataSource {
   }
 
   @override
-  Future<List<MoviesEntity>> sarchMovies(int page, String query) async {
+  Future<List<MoviesEntity>> searchMovies(int page, String query) async {
     try {
       var response = await dio.get(
         'https://api.themoviedb.org/3/search/movie?api_key=6ccd72a2a8fc239b13f209408fc31c33&language=ru-RU&query=$query&page=$page&include_adult=false',

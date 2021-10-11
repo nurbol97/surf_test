@@ -22,8 +22,9 @@ class _MainViewState extends State<MainView> {
   List<MoviesEntity> moviesList = [];
   ScrollController scrollController = ScrollController();
   List<MoviesEntity> searchList = [];
-  ScrollController scrollControllerForSearcg = ScrollController();
+  ScrollController scrollControllerForSearch = ScrollController();
   bool isLoading = false;
+  bool isSearch = false;
   @override
   void initState() {
     context.read<MovieBloc>().add(LoadMovies());
@@ -40,7 +41,13 @@ class _MainViewState extends State<MainView> {
           width: double.infinity,
           height: 50.h,
           child: TextField(
-            onSubmitted: (String val) {},
+            onSubmitted: (String val) {
+              print(val);
+
+              Future.delayed(Duration(seconds: 1), () {
+                context.read<MovieBloc>().add(SearchMovie(searchController.text));
+              });
+            },
             controller: searchController,
             onChanged: (String val) {
               setState(() {
@@ -62,6 +69,7 @@ class _MainViewState extends State<MainView> {
                       ),
                       onPressed: () {
                         searchController.clear();
+                        context.read<MovieBloc>().add(LoadMovies());
                         setState(() {
                           symbolCount = 0;
                         });
@@ -102,17 +110,25 @@ class _MainViewState extends State<MainView> {
                   isLoading = false;
                 });
               }
+              if (state is SearchSuccess) {
+                setState(() {
+                  isLoading = false;
+                  // isSearch = true;
+                });
+              }
             },
             builder: (context, state) {
               if (state is MovieLoading) {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
-              } else if (state is MovieFailure) {
+              }
+              if (state is MovieFailure) {
                 return Center(
                   child: Text(state.message),
                 );
-              } else if (state is MovieLoadSuccess) {
+              }
+              if (state is MovieLoadSuccess) {
                 moviesList.addAll(state.movies);
                 context.read<MovieBloc>().isFetching = false;
                 return Container(
@@ -176,13 +192,14 @@ class _MainViewState extends State<MainView> {
                         }
                       }),
                 );
-              } else if (state is SearchSuccess) {
+              }
+              if (state is SearchSuccess) {
                 searchList.addAll(state.movies);
                 context.read<MovieBloc>().isFetching = false;
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 10.w),
                   child: ListView.builder(
-                      controller: scrollController,
+                      controller: scrollControllerForSearch,
                       // ..addListener(() {
                       //   if (scrollController.position.atEdge) {
                       //     if (scrollController.position.pixels != 0) {
@@ -210,9 +227,10 @@ class _MainViewState extends State<MainView> {
                                           isLoading = true;
                                         });
                                         context.read<MovieBloc>().isFetching = true;
-                                        context.read<MovieBloc>().add(LoadMovies());
+                                        context.read<MovieBloc>().add(SearchMovie(searchController.text));
                                         Timer(Duration(milliseconds: 30), () {
-                                          scrollController.jumpTo(scrollController.position.maxScrollExtent);
+                                          scrollControllerForSearch
+                                              .jumpTo(scrollControllerForSearch.position.maxScrollExtent);
                                         });
                                       },
                                     ),

@@ -33,7 +33,7 @@ class MoviesRepositoryImpl implements MoviesRepository {
     if (await networkInfo.isConnected) {
       try {
         print('Repository IMPL MOVIES Search');
-        final moviesSearch = await remoteDataSource.getMovies(params.page);
+        final moviesSearch = await remoteDataSource.searchMovies(params.page, params.query);
         return Right(moviesSearch);
       } catch (e) {
         return Left(ServerFailure(e.toString()));
