@@ -45,7 +45,7 @@ class _MainViewState extends State<MainView> {
               print(val);
 
               Future.delayed(Duration(seconds: 1), () {
-                context.read<MovieBloc>().add(SearchMovie(searchController.text));
+                context.read<MovieBloc>().add(SearchMovie(val));
               });
             },
             controller: searchController,

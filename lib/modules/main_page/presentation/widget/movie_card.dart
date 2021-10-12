@@ -88,7 +88,7 @@ class MovieCardWidget extends StatelessWidget {
                           print('added to fav');
                         },
                         child: Icon(
-                          Icons.favorite,
+                          Icons.favorite_border,
                           size: 18,
                           color: ColorStyles.app_blue_2443FF,
                         ),
