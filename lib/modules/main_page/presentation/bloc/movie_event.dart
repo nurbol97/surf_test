@@ -11,9 +11,9 @@ class SearchMovie extends MovieEvent {
   SearchMovie(this.query);
 }
 
-class SaveToCache extends MovieEvent {
-  final List<MoviesEntity> musics;
-  SaveToCache(this.musics);
-}
+// class SaveToCache extends MovieEvent {
+//   final List<MoviesEntity> musics;
+//   SaveToCache(this.musics);
+// }
 
-class GetFromCache extends MovieEvent {}
+// class GetFromCache extends MovieEvent {}

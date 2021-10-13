@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/services.dart';
 import 'core/utils/injection_container.dart';
 import 'modules/main_page/presentation/bloc/movie_bloc.dart';
+import 'modules/main_page/presentation/cacheBloc/bloc/cache_bloc.dart';
 import 'modules/main_page/presentation/view/main_view.dart';
 
 void main() {
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
       builder: () => MultiBlocProvider(
         providers: [
           BlocProvider(create: (_) => sl<MovieBloc>()),
+          BlocProvider(create: (_) => CacheBloc()),
         ],
         child: MaterialApp(
           // builder: () => MaterialApp(

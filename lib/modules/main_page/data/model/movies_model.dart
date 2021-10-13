@@ -15,12 +15,11 @@ class MoviesModel extends MoviesEntity {
         id: json['id'],
         name: json['title'] ?? json['original_title'],
         description: json['overview'],
-        imgUrl: json['poster_path'],
+        imgUrl: json['poster_path'] ?? '',
         date: json['release_date'],
       );
 
-
-    static Map<String, dynamic> toMap(MoviesEntity movie) => {
+  static Map<String, dynamic> toMap(MoviesEntity movie) => {
         'id': movie.id,
         'title': movie.name,
         'overview': movie.description,
@@ -29,13 +28,9 @@ class MoviesModel extends MoviesEntity {
       };
 
   static String encode(List<MoviesEntity> movies) => json.encode(
-        movies
-            .map<Map<String, dynamic>>((movies) => MoviesModel.toMap(movies))
-            .toList(),
+        movies.map<Map<String, dynamic>>((movies) => MoviesModel.toMap(movies)).toList(),
       );
 
   static List<MoviesEntity> decode(String movie) =>
-      (json.decode(movie) as List<dynamic>)
-          .map<MoviesEntity>((item) => MoviesModel.fromJson(item))
-          .toList();    
+      (json.decode(movie) as List<dynamic>).map<MoviesEntity>((item) => MoviesModel.fromJson(item)).toList();
 }

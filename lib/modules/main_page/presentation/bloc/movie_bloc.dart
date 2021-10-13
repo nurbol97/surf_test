@@ -42,8 +42,7 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
       try {
         final response = await getMovies(GetMoviesParams(page: page));
 
-        yield response.fold((failure) => MovieFailure(failure.toString()),
-            (movies) {
+        yield response.fold((failure) => MovieFailure(failure.toString()), (movies) {
           page++;
           return MovieLoadSuccess(movies);
         });
@@ -73,11 +72,10 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
     if (event is SearchMovie) {
       yield MovieLoading();
       try {
-        final response = await searchMovies(
-            SearchMoviesParams(page: searchPage, query: event.query));
+        final response = await searchMovies(SearchMoviesParams(page: 1, query: event.query));
         print('Search Reponse $response');
-        yield response.fold((failure) => MovieFailure(failure.toString()),
-            (movies) {
+        yield response.fold((failure) => MovieFailure(failure.toString()), (movies) {
+          searchPage++;
           return SearchSuccess(movies);
         });
       } on DioError catch (e) {
@@ -87,31 +85,31 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
         yield MovieFailure(e.toString());
       }
     }
-    if (event is SaveToCache) {
-      bool saveCheck = false;
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String encodedData = MoviesModel.encode(event.musics);
-      saveCheck = await prefs.setString('movies', encodedData);
+    // if (event is SaveToCache) {
+    //   bool saveCheck = false;
+    //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+    //   final String encodedData = MoviesModel.encode(event.musics);
+    //   saveCheck = await prefs.setString('movies', encodedData);
 
-      if (saveCheck != false) {
-        print('savedSuccsess');
-        yield SavedToCacheSuccess();
-      } else {
-        yield CacheErrorState('Не получилось сохранить');
-      }
-    }
-    if (event is GetFromCache) {
-     final SharedPreferences prefs = await SharedPreferences.getInstance();
-     // ignore: await_only_futures
-     final String? moviesString = await prefs.getString('movies');
-     
-     final List<MoviesEntity>? movies = moviesString != null ? MoviesModel.decode(moviesString) : null;
+    //   if (saveCheck != false) {
+    //     print('savedSuccsess');
+    //     yield SavedToCacheSuccess();
+    //   } else {
+    //     yield CacheErrorState('Не получилось сохранить');
+    //   }
+    // }
+    // if (event is GetFromCache) {
+    //   final SharedPreferences prefs = await SharedPreferences.getInstance();
+    //   // ignore: await_only_futures
+    //   final String? moviesString = await prefs.getString('movies');
 
-      if (movies != null) {
-        yield GetFromCacheSuccess(movies);
-      } else {
-        yield CacheErrorState('Ошибка вывода с кэша');
-      }
-    }
+    //   final List<MoviesEntity>? movies = moviesString != null ? MoviesModel.decode(moviesString) : null;
+
+    //   if (movies != null) {
+    //     yield GetFromCacheSuccess(movies);
+    //   } else {
+    //     yield CacheErrorState('Ошибка вывода с кэша');
+    //   }
+    // }
   }
 }

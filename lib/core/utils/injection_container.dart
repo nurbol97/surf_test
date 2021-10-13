@@ -3,7 +3,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:dio/dio.dart';
 import 'package:surf_test/core/services/network/network_info.dart';
 import 'package:surf_test/modules/main_page/data/datasources/movie_datasource.dart';
-import 'package:surf_test/modules/main_page/data/repository/news_repository_impl.dart';
+import 'package:surf_test/modules/main_page/data/repository/movies_repository_impl.dart';
 import 'package:surf_test/modules/main_page/domain/repositories/movies_repository.dart';
 import 'package:surf_test/modules/main_page/domain/usecases/get_movies_usecase.dart';
 import 'package:surf_test/modules/main_page/domain/usecases/search_movies_usecase.dart';

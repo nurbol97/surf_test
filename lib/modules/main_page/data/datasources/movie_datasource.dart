@@ -54,7 +54,7 @@ class MoviewDataSourceImpl implements MovieDataSource {
             headers: headers),
       );
       print(response);
-      print('success state is: ${response.statusCode}');
+      print('success state search is: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         {

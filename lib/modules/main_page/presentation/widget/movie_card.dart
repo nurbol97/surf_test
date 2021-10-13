@@ -8,6 +8,7 @@ import 'package:surf_test/modules/main_page/data/model/movies_model.dart';
 import 'package:surf_test/modules/main_page/domain/entity/movies_entity.dart';
 import 'package:surf_test/modules/main_page/presentation/bloc/movie_bloc.dart';
 import 'package:collection/collection.dart';
+import 'package:surf_test/modules/main_page/presentation/cacheBloc/bloc/cache_bloc.dart';
 
 class MovieCardWidget extends StatefulWidget {
   // final String nameOfMovie;
@@ -31,7 +32,6 @@ class _MovieCardWidgetState extends State<MovieCardWidget> {
   @override
   void initState() {
     super.initState();
-    context.read<MovieBloc>().add(GetFromCache());
   }
 
   List<MoviesEntity> movies = [];
@@ -100,17 +100,16 @@ class _MovieCardWidgetState extends State<MovieCardWidget> {
                           ),
                           Text(
                             widget.movieCard.date,
-                            style: TextStyles.grey_12_w500
-                                .copyWith(fontWeight: FontWeight.w600),
+                            style: TextStyles.grey_12_w500.copyWith(fontWeight: FontWeight.w600),
                           )
                         ],
                       ),
-                      BlocListener<MovieBloc, MovieState>(
+                      BlocListener<CacheBloc, CacheState>(
                           listener: (context, state) {
                             if (state is GetFromCacheSuccess) {
                               movies = state.movies;
-                              final movieFromCache = movies.firstWhereOrNull(
-                                  (movie) => movie.id == widget.movieCard.id);
+                              final movieFromCache =
+                                  movies.firstWhereOrNull((movie) => movie.id == widget.movieCard.id);
                               if (movieFromCache != null) {
                                 setState(() {
                                   isFavorite = true;
@@ -138,9 +137,7 @@ class _MovieCardWidgetState extends State<MovieCardWidget> {
                                       isFavorite = true;
                                     });
                                     movies.add(widget.movieCard);
-                                    context
-                                        .read<MovieBloc>()
-                                        .add(SaveToCache(movies));
+                                    context.read<CacheBloc>().add(SaveToCache(movies));
                                   },
                                   child: Icon(
                                     Icons.favorite_border,
@@ -153,11 +150,8 @@ class _MovieCardWidgetState extends State<MovieCardWidget> {
                                     setState(() {
                                       isFavorite = false;
                                     });
-                                    movies.removeWhere((item) =>
-                                        item.id == widget.movieCard.id);
-                                    context
-                                        .read<MovieBloc>()
-                                        .add(SaveToCache(movies));
+                                    movies.removeWhere((item) => item.id == widget.movieCard.id);
+                                    context.read<CacheBloc>().add(SaveToCache(movies));
                                     print('added to fav');
                                   },
                                   child: Icon(

@@ -24,17 +24,17 @@ class SearchSuccess extends MovieState {
   SearchSuccess(this.movies);
 }
 
-class SavedToCacheSuccess extends MovieState {
-}
+// class SavedToCacheSuccess extends MovieState {
+// }
 
-class GetFromCacheSuccess extends MovieState {
-   final List<MoviesEntity> movies;
+// class GetFromCacheSuccess extends MovieState {
+//    final List<MoviesEntity> movies;
 
-  GetFromCacheSuccess(this.movies);
-}
+//   GetFromCacheSuccess(this.movies);
+// }
 
-class CacheErrorState extends MovieState {
-   final String message;
-   CacheErrorState(this.message);
+// class CacheErrorState extends MovieState {
+//    final String message;
+//    CacheErrorState(this.message);
 
-}
+// }
