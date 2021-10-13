@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:surf_test/constants/colors/colors_styles.dart';
 import 'package:surf_test/constants/text/text_styles.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:surf_test/modules/main_page/data/model/movies_model.dart';
+import 'package:surf_test/modules/main_page/domain/entity/movies_entity.dart';
+import 'package:surf_test/modules/main_page/presentation/bloc/movie_bloc.dart';
 
 class MovieCardWidget extends StatelessWidget {
-  final String nameOfMovie;
-  final String movieImgUrl;
-  final String movieDescription;
-  final String movieReleaseDate;
-
+  // final String nameOfMovie;
+  // final String movieImgUrl;
+  // final String movieDescription;
+  // final String movieReleaseDate;
+  final MoviesEntity movie;
   const MovieCardWidget(
-      {required this.nameOfMovie,
-      required this.movieImgUrl,
-      required this.movieDescription,
-      required this.movieReleaseDate});
+      // {required this.nameOfMovie,
+      // required this.movieImgUrl,
+      // required this.movieDescription,
+      // required this.movieReleaseDate});
+
+      {required this.movie});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +52,7 @@ class MovieCardWidget extends StatelessWidget {
                 children: [
                   Container(
                     child: Text(
-                      nameOfMovie,
+                      movie.name,
                       style: TextStyles.black_20_w500,
                     ),
                   ),
@@ -56,7 +63,7 @@ class MovieCardWidget extends StatelessWidget {
                     child: Container(
                       height: 120.h,
                       child: Text(
-                        movieDescription,
+                        movie.description,
                         style: TextStyles.grey_12_w500,
                         textAlign: TextAlign.left,
                         maxLines: 3,
@@ -78,19 +85,25 @@ class MovieCardWidget extends StatelessWidget {
                             width: 5,
                           ),
                           Text(
-                            movieReleaseDate,
-                            style: TextStyles.grey_12_w500.copyWith(fontWeight: FontWeight.w600),
+                            movie.date,
+                            style: TextStyles.grey_12_w500
+                                .copyWith(fontWeight: FontWeight.w600),
                           )
                         ],
                       ),
-                      InkWell(
-                        onTap: () {
-                          print('added to fav');
+                      BlocListener<MovieBloc, MovieState>(
+                        listener: (context, state) {
+                         
                         },
-                        child: Icon(
-                          Icons.favorite_border,
-                          size: 18,
-                          color: ColorStyles.app_blue_2443FF,
+                        child: InkWell(
+                          onTap: () {
+                            print('added to fav');
+                          },
+                          child: Icon(
+                            Icons.favorite_border,
+                            size: 18,
+                            color: ColorStyles.app_blue_2443FF,
+                          ),
                         ),
                       )
                     ],

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:surf_test/modules/main_page/domain/entity/movies_entity.dart';
 
 class MoviesModel extends MoviesEntity {
@@ -16,4 +18,24 @@ class MoviesModel extends MoviesEntity {
         imgUrl: json['poster_path'],
         date: json['release_date'],
       );
+
+
+    static Map<String, dynamic> toMap(MoviesEntity movie) => {
+        'id': movie.id,
+        'title': movie.name,
+        'overview': movie.description,
+        'poster_path': movie.imgUrl,
+        'release_date': movie.date,
+      };
+
+  static String encode(List<MoviesEntity> movies) => json.encode(
+        movies
+            .map<Map<String, dynamic>>((movies) => MoviesModel.toMap(movies))
+            .toList(),
+      );
+
+  static List<MoviesEntity> decode(String movie) =>
+      (json.decode(movie) as List<dynamic>)
+          .map<MoviesEntity>((item) => MoviesModel.fromJson(item))
+          .toList();    
 }

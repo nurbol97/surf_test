@@ -183,10 +183,7 @@ class _MainViewState extends State<MainView> {
                               ScaffoldMessenger.of(context).showSnackBar(snackBar);
                             },
                             child: MovieCardWidget(
-                              nameOfMovie: moviesList[index].name,
-                              movieDescription: moviesList[index].description,
-                              movieImgUrl: moviesList[index].imgUrl,
-                              movieReleaseDate: moviesList[index].date,
+                             movie: moviesList[index],
                             ),
                           );
                         }
@@ -249,10 +246,7 @@ class _MainViewState extends State<MainView> {
                               ScaffoldMessenger.of(context).showSnackBar(snackBar);
                             },
                             child: MovieCardWidget(
-                              nameOfMovie: searchList[index].name,
-                              movieDescription: searchList[index].description,
-                              movieImgUrl: searchList[index].imgUrl,
-                              movieReleaseDate: searchList[index].date,
+                              movie: moviesList[index],
                             ),
                           );
                         }

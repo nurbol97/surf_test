@@ -23,3 +23,12 @@ class SearchSuccess extends MovieState {
 
   SearchSuccess(this.movies);
 }
+
+class SavedToCacheSuccess extends MovieState {
+}
+
+class GetFromCacheSuccess extends MovieState {
+   final List<MoviesEntity> movies;
+
+  GetFromCacheSuccess(this.movies);
+}
