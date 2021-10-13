@@ -32,3 +32,9 @@ class GetFromCacheSuccess extends MovieState {
 
   GetFromCacheSuccess(this.movies);
 }
+
+class CacheErrorState extends MovieState {
+   final String message;
+   CacheErrorState(this.message);
+
+}

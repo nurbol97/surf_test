@@ -7,21 +7,35 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:surf_test/modules/main_page/data/model/movies_model.dart';
 import 'package:surf_test/modules/main_page/domain/entity/movies_entity.dart';
 import 'package:surf_test/modules/main_page/presentation/bloc/movie_bloc.dart';
+import 'package:collection/collection.dart';
 
-class MovieCardWidget extends StatelessWidget {
+class MovieCardWidget extends StatefulWidget {
   // final String nameOfMovie;
   // final String movieImgUrl;
   // final String movieDescription;
   // final String movieReleaseDate;
-  final MoviesEntity movie;
+  final MoviesEntity movieCard;
   const MovieCardWidget(
       // {required this.nameOfMovie,
       // required this.movieImgUrl,
       // required this.movieDescription,
       // required this.movieReleaseDate});
 
-      {required this.movie});
+      {required this.movieCard});
 
+  @override
+  State<MovieCardWidget> createState() => _MovieCardWidgetState();
+}
+
+class _MovieCardWidgetState extends State<MovieCardWidget> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<MovieBloc>().add(GetFromCache());
+  }
+
+  List<MoviesEntity> movies = [];
+  bool isFavorite = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -52,7 +66,7 @@ class MovieCardWidget extends StatelessWidget {
                 children: [
                   Container(
                     child: Text(
-                      movie.name,
+                      widget.movieCard.name,
                       style: TextStyles.black_20_w500,
                     ),
                   ),
@@ -63,7 +77,7 @@ class MovieCardWidget extends StatelessWidget {
                     child: Container(
                       height: 120.h,
                       child: Text(
-                        movie.description,
+                        widget.movieCard.description,
                         style: TextStyles.grey_12_w500,
                         textAlign: TextAlign.left,
                         maxLines: 3,
@@ -85,27 +99,73 @@ class MovieCardWidget extends StatelessWidget {
                             width: 5,
                           ),
                           Text(
-                            movie.date,
+                            widget.movieCard.date,
                             style: TextStyles.grey_12_w500
                                 .copyWith(fontWeight: FontWeight.w600),
                           )
                         ],
                       ),
                       BlocListener<MovieBloc, MovieState>(
-                        listener: (context, state) {
-                         
-                        },
-                        child: InkWell(
-                          onTap: () {
-                            print('added to fav');
+                          listener: (context, state) {
+                            if (state is GetFromCacheSuccess) {
+                              movies = state.movies;
+                              final movieFromCache = movies.firstWhereOrNull(
+                                  (movie) => movie.id == widget.movieCard.id);
+                              if (movieFromCache != null) {
+                                setState(() {
+                                  isFavorite = true;
+                                });
+                              } else {
+                                setState(() {
+                                  isFavorite = false;
+                                });
+                              }
+                            }
+                            if (state is CacheErrorState) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  duration: Duration(seconds: 2),
+                                  content: Text(state.message),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
                           },
-                          child: Icon(
-                            Icons.favorite_border,
-                            size: 18,
-                            color: ColorStyles.app_blue_2443FF,
-                          ),
-                        ),
-                      )
+                          child: !isFavorite
+                              ? InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      isFavorite = true;
+                                    });
+                                    movies.add(widget.movieCard);
+                                    context
+                                        .read<MovieBloc>()
+                                        .add(SaveToCache(movies));
+                                  },
+                                  child: Icon(
+                                    Icons.favorite_border,
+                                    size: 18,
+                                    color: ColorStyles.app_blue_2443FF,
+                                  ),
+                                )
+                              : InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      isFavorite = false;
+                                    });
+                                    movies.removeWhere((item) =>
+                                        item.id == widget.movieCard.id);
+                                    context
+                                        .read<MovieBloc>()
+                                        .add(SaveToCache(movies));
+                                    print('added to fav');
+                                  },
+                                  child: Icon(
+                                    Icons.favorite,
+                                    size: 18,
+                                    color: ColorStyles.app_blue_2443FF,
+                                  ),
+                                ))
                     ],
                   )
                 ],

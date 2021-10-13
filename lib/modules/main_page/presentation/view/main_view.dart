@@ -28,6 +28,7 @@ class _MainViewState extends State<MainView> {
   @override
   void initState() {
     context.read<MovieBloc>().add(LoadMovies());
+
     super.initState();
   }
 
@@ -77,7 +78,8 @@ class _MainViewState extends State<MainView> {
                     )
                   : null,
               filled: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
+              contentPadding:
+                  EdgeInsets.symmetric(vertical: 10.h, horizontal: 10.w),
               fillColor: Colors.white,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(20),
@@ -102,7 +104,8 @@ class _MainViewState extends State<MainView> {
             listener: (context, state) {
               if (state is MovieFailure) {
                 Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text('Проверьте соединение с интернетом и попробуйте еще раз! ${state.message}')));
+                    content: Text(
+                        'Проверьте соединение с интернетом и попробуйте еще раз! ${state.message}')));
                 context.read<MovieBloc>().isFetching = false;
               }
               if (state is MovieLoadSuccess) {
@@ -161,10 +164,15 @@ class _MainViewState extends State<MainView> {
                                         setState(() {
                                           isLoading = true;
                                         });
-                                        context.read<MovieBloc>().isFetching = true;
-                                        context.read<MovieBloc>().add(LoadMovies());
+                                        context.read<MovieBloc>().isFetching =
+                                            true;
+                                        context
+                                            .read<MovieBloc>()
+                                            .add(LoadMovies());
                                         Timer(Duration(milliseconds: 30), () {
-                                          scrollController.jumpTo(scrollController.position.maxScrollExtent);
+                                          scrollController.jumpTo(
+                                              scrollController
+                                                  .position.maxScrollExtent);
                                         });
                                       },
                                     ),
@@ -180,10 +188,11 @@ class _MainViewState extends State<MainView> {
                                 content: Text('${moviesList[index].name}'),
                                 duration: const Duration(milliseconds: 500),
                               );
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
                             },
                             child: MovieCardWidget(
-                             movie: moviesList[index],
+                              movieCard: moviesList[index],
                             ),
                           );
                         }
@@ -223,11 +232,14 @@ class _MainViewState extends State<MainView> {
                                         setState(() {
                                           isLoading = true;
                                         });
-                                        context.read<MovieBloc>().isFetching = true;
-                                        context.read<MovieBloc>().add(SearchMovie(searchController.text));
+                                        context.read<MovieBloc>().isFetching =
+                                            true;
+                                        context.read<MovieBloc>().add(
+                                            SearchMovie(searchController.text));
                                         Timer(Duration(milliseconds: 30), () {
-                                          scrollControllerForSearch
-                                              .jumpTo(scrollControllerForSearch.position.maxScrollExtent);
+                                          scrollControllerForSearch.jumpTo(
+                                              scrollControllerForSearch
+                                                  .position.maxScrollExtent);
                                         });
                                       },
                                     ),
@@ -243,18 +255,80 @@ class _MainViewState extends State<MainView> {
                                 content: Text('${searchList[index].name}'),
                                 duration: const Duration(milliseconds: 500),
                               );
-                              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
                             },
                             child: MovieCardWidget(
-                              movie: moviesList[index],
+                              movieCard: moviesList[index],
                             ),
                           );
                         }
                       }),
                 );
               } else {
-                return Center(
-                  child: CircularProgressIndicator(),
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10.w),
+                  child: ListView.builder(
+                      controller: scrollController,
+                      // ..addListener(() {
+                      //   if (scrollController.position.atEdge) {
+                      //     if (scrollController.position.pixels != 0) {
+                      //       context.read<MovieBloc>().isFetching = true;
+                      //       context.read<MovieBloc>().add(LoadMovies());
+                      //     }
+                      //   }
+                      // }),
+                      shrinkWrap: true,
+                      itemCount: moviesList.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == moviesList.length) {
+                          return !isLoading
+                              ? Center(
+                                  child: Ink(
+                                    decoration: const ShapeDecoration(
+                                      color: Colors.blue,
+                                      shape: CircleBorder(),
+                                    ),
+                                    child: IconButton(
+                                      icon: const Icon(Icons.refresh),
+                                      color: Colors.white,
+                                      onPressed: () {
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                        context.read<MovieBloc>().isFetching =
+                                            true;
+                                        context
+                                            .read<MovieBloc>()
+                                            .add(LoadMovies());
+                                        Timer(Duration(milliseconds: 30), () {
+                                          scrollController.jumpTo(
+                                              scrollController
+                                                  .position.maxScrollExtent);
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                )
+                              : Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                        } else {
+                          return InkWell(
+                            onTap: () {
+                              final snackBar = SnackBar(
+                                content: Text('${moviesList[index].name}'),
+                                duration: const Duration(milliseconds: 500),
+                              );
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(snackBar);
+                            },
+                            child: MovieCardWidget(
+                              movieCard: moviesList[index],
+                            ),
+                          );
+                        }
+                      }),
                 );
               }
             },

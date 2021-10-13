@@ -94,21 +94,23 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
       saveCheck = await prefs.setString('movies', encodedData);
 
       if (saveCheck != false) {
+        print('savedSuccsess');
         yield SavedToCacheSuccess();
       } else {
-        yield MovieFailure('Не получилось сохранить');
+        yield CacheErrorState('Не получилось сохранить');
       }
     }
     if (event is GetFromCache) {
      final SharedPreferences prefs = await SharedPreferences.getInstance();
      // ignore: await_only_futures
      final String? moviesString = await prefs.getString('movies');
-     final List<MoviesEntity>? movies = MoviesModel.decode(moviesString!);
+     
+     final List<MoviesEntity>? movies = moviesString != null ? MoviesModel.decode(moviesString) : null;
 
       if (movies != null) {
         yield GetFromCacheSuccess(movies);
       } else {
-        yield MovieFailure('Ошибка вывода с кэша');
+        yield CacheErrorState('Ошибка вывода с кэша');
       }
     }
   }
